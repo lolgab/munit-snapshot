@@ -4,6 +4,7 @@ import $ivy.`com.goyeau::mill-scalafix:0.2.1`
 import com.goyeau.mill.scalafix.ScalafixModule
 
 trait Common extends ScalaModule with PublishModule with ScalafixModule {
+  def artifactName = "munit-snapshot"
   def millSourcePath = super.millSourcePath / os.up
   def scalaVersion = "2.13.4"
   def organization = "com.github.lolgab"
