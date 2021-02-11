@@ -6,6 +6,12 @@ import upickle.default._
 
 trait SnapshotSuite extends FunSuite {
 
+  private var file: os.Path = null
+  private var json: ujson.Obj = null
+  private var initialJson: Map[String, ujson.Value] = null
+  private var currentTests: Set[String] = null
+  private var executedTests = 0
+
   def snapshotTest[T: ReadWriter](
       name: String
   )(body: => T)(implicit loc: Location): Unit = {
@@ -15,33 +21,29 @@ trait SnapshotSuite extends FunSuite {
       options: TestOptions
   )(body: => T)(implicit loc: Location): Unit = test(options) {
     StackTraces.dropInside {
-      val value = body
-      def pair = options.name -> writeJs(value)
-
-      val path = os.Path(loc.path)
-      val file = path / os.up / s"${path.last.stripSuffix("scala")}json"
-      val toWriteOpt: Option[ujson.Obj] = if (os.isFile(file)) {
-        val json = ujson.read(os.read(file)).obj
-        val res = json.get(options.name) match {
-          case Some(v) =>
-            assertEquals(read[T](v), value)
-            json
-          case None =>
-            json
-              .addOne(pair)
-              .toSeq
-              .sortBy(_._1)
-        }
-        val withoutStales = res.filter { case (name, _) =>
-          munitTests.exists(_.name == name)
-        }
-        if (withoutStales != json) Some(withoutStales) else None
-      } else {
-        Some(Seq(pair))
+      // First test executed
+      if (file == null && json == null && initialJson == null) {
+        val path = os.Path(loc.path)
+        file = path / os.up / s"${path.last.stripSuffix("scala")}json"
+        json = if(os.isFile(file)) ujson.read(os.read.stream(file)).obj else ujson.Obj()
+        initialJson = json.value.toMap
+        currentTests = munitTests.view.map(_.name).toSet
       }
-      toWriteOpt.foreach(json =>
-        os.write.over(file, ujson.write(json, 2) + "\n")
-      )
+      executedTests += 1
+
+      def pair = options.name -> writeJs(body)
+
+      json.value.get(options.name) match {
+        case Some(v) => assertEquals(body, read[T](v))
+        case None => json.value += pair
+      }
+    }
+    // Last test executed
+    if(executedTests == currentTests.size) {
+      val withoutStales = json.value.iterator.filter { case (k, _) => currentTests(k) }.toSeq.sortBy(_._1).toMap
+      if (withoutStales != initialJson) {
+        os.write.over(file, ujson.write(withoutStales, 2) + "\n")
+      }
     }
   }
 }
