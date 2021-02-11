@@ -34,7 +34,7 @@ trait SnapshotSuite extends FunSuite {
       def pair = options.name -> writeJs(body)
 
       json.value.get(options.name) match {
-        case Some(v) => assertEquals(read[T](v), body)
+        case Some(v) => assertEquals(body, read[T](v))
         case None => json.value += pair
       }
     }
