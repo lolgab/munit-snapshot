@@ -1,5 +1,8 @@
 package munit.snapshot
 
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
+
 import munit._
 import munit.internal.console.StackTraces
 import upickle.default._
@@ -42,7 +45,10 @@ trait SnapshotSuite extends FunSuite {
     if(executedTests == currentTests.size) {
       val withoutStales = json.value.iterator.filter { case (k, _) => currentTests(k) }.toSeq.sortBy(_._1).toMap
       if (withoutStales != initialJson) {
-        os.write.over(file, ujson.write(withoutStales, 2) + "\n")
+        val writer = new BufferedWriter(new OutputStreamWriter(os.write.over.outputStream(file)))
+        ujson.writeTo(withoutStales, writer, 2)
+        writer.write('\n')
+        writer.close()
       }
     }
   }
