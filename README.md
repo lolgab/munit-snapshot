@@ -8,7 +8,7 @@ This project is a basic implementation of the [snapshot tests](https://jestjs.io
 After adding the `munit-snapshot` dependency:
 
 ```scala
-libraryDependencies += "com.github.lolgab" %% "munit-snapshot" % "0.0.1"
+libraryDependencies += "com.github.lolgab" %% "munit-snapshot" % "0.0.2"
 ```
 
 You can create a basic test in a file called `ExampleSnapshotTest.scala`:
