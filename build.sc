@@ -13,7 +13,7 @@ trait Common extends ScalaModule with PublishModule with ScalafixModule {
     ivy"com.lihaoyi::upickle::1.2.3",
     ivy"com.lihaoyi::os-lib::0.7.2"
   )
-  def publishVersion = "0.0.4-SNAPSHOT"
+  def publishVersion = "0.0.4"
   def pomSettings =
     PomSettings(
       description = "Snapshot testing for MUnit",
