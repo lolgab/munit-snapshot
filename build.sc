@@ -30,6 +30,15 @@ trait Common extends ScalaModule with PublishModule with ScalafixModule {
     )
   trait CommonTest extends Tests {
     def testFrameworks = Seq("munit.Framework")
+    def jsonFiles = T.input {
+      os.walk(millSourcePath)
+        .filter(f => os.isFile(f) && f.ext == "json")
+        .map(PathRef(_))
+    }
+    def compile = T {
+      jsonFiles()
+      super.compile()
+    }
   }
 
   def scalacOptions = Seq("-Ywarn-unused")
