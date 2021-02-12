@@ -2,6 +2,7 @@ package munit.snapshot
 
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
+
 import scala.collection.mutable.LinkedHashMap
 
 import munit._
