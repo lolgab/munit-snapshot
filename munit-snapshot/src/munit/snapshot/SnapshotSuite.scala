@@ -46,12 +46,12 @@ trait SnapshotSuite extends FunSuite {
     }
     // Last test executed
     if (executedTests == currentTests.size) {
-      val withoutStales = json.filter { case (k, _) => currentTests(k) }
-      if (withoutStales.nonEmpty) {
+      val finalJson = (initialJson ++ json).filter { case (k, _) => currentTests(k) }
+      if (finalJson != initialJson) {
         val writer = new BufferedWriter(
           new OutputStreamWriter(os.write.over.outputStream(file))
         )
-        ujson.writeTo(initialJson ++ withoutStales, writer, 2)
+        ujson.writeTo(finalJson, writer, 2)
         writer.write('\n')
         writer.close()
       }
