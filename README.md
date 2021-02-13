@@ -8,7 +8,7 @@ This project is a basic implementation of the [snapshot tests](https://jestjs.io
 After adding the `munit-snapshot` dependency:
 
 ```scala
-libraryDependencies += "com.github.lolgab" %% "munit-snapshot" % "0.0.3" % Test
+libraryDependencies += "com.github.lolgab" %% "munit-snapshot" % "0.0.4" % Test
 ```
 
 You can create a basic test in a file called `ExampleSnapshotTest.scala`:
@@ -53,14 +53,14 @@ Here you can see what happens if I change the json file to:
 
 Running the test again will output:
 
-```
+```scala
 6:class ExampleSnapshotTest extends SnapshotSuite {
 7:  snapshotTest("one plus one") {
 8:    1 + 1
 values are not the same
 => Obtained
-3
+2
 => Diff (- obtained, + expected)
--3
-+2
+-2
++3
 ```
