@@ -25,7 +25,7 @@ jobs:
           distribution: temurin
           java-version: 21
       - uses: coursier/cache-action@v9
-      - run: ./mill 'munit-snapshot.__.${{ matrix.platform }}.__.test'
+      - run: ./mill 'munit-snapshot.${{ matrix.platform }}.test'
 
   lint:
     runs-on: ubuntu-latest

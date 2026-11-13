@@ -1,10 +1,8 @@
 package example
 
-import munit.snapshot._
-import upickle.default._
+import munit.snapshot.*
 
-class ExampleSnapshotTest extends SnapshotSuite {
+class ExampleSnapshotTest extends SnapshotSuite:
   snapshotTest("one plus one") {
     1 + 1
   }
-}
