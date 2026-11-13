@@ -48,7 +48,7 @@ trait SnapshotSuite extends FunSuite {
         } finally {
           if (options.name == snapshotTests.last) {
             val finalJson = json.filter { case (k, _) => snapshotTests(k) }
-            if (!finalJson.sameElements(initialJson)) {
+            if (!finalJson.iterator.sameElements(initialJson)) {
               val writer = new BufferedWriter(
                 new OutputStreamWriter(os.write.over.outputStream(file))
               )

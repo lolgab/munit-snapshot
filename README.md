@@ -3,6 +3,8 @@
 Snapshot testing for MUnit.
 This project is a basic implementation of the [snapshot tests](https://jestjs.io/docs/en/snapshot-testing).
 
+Published for Scala 3 and Scala 2.13, on the JVM and Scala Native 0.5.
+
 ## Getting started
 
 After adding the `munit-snapshot` dependency:
