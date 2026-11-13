@@ -3,7 +3,8 @@
 Snapshot testing for MUnit.
 This project is a basic implementation of the [snapshot tests](https://jestjs.io/docs/en/snapshot-testing).
 
-Published for Scala 3 and Scala 2.13, on the JVM and Scala Native 0.5.
+Published for Scala 3.9+, on the JVM and Scala Native 0.5.
+Versions up to 0.0.4 also support Scala 2.13.
 
 ## Getting started
 
@@ -18,14 +19,21 @@ You can create a basic test in a file called `ExampleSnapshotTest.scala`:
 ```scala
 package example
 
-import munit.snapshot._
-import upickle.default._
+import munit.snapshot.*
 
-class ExampleSnapshotTest extends SnapshotSuite {
+class ExampleSnapshotTest extends SnapshotSuite:
   snapshotTest("one plus one") {
     1 + 1
   }
-}
+```
+
+Snapshot values are serialized with [upickle](https://github.com/com-lihaoyi/upickle),
+so they need a `ReadWriter`. For your own types, derive one:
+
+```scala
+import upickle.default.*
+
+case class User(name: String, age: Int) derives ReadWriter
 ```
 
 Running the tests the first time will generate a file
@@ -56,9 +64,9 @@ Here you can see what happens if I change the json file to:
 Running the test again will output:
 
 ```scala
-6:class ExampleSnapshotTest extends SnapshotSuite {
-7:  snapshotTest("one plus one") {
-8:    1 + 1
+5:class ExampleSnapshotTest extends SnapshotSuite:
+6:  snapshotTest("one plus one") {
+7:    1 + 1
 values are not the same
 => Obtained
 2
