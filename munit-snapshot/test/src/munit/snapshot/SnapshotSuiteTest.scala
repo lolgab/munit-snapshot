@@ -10,7 +10,7 @@ class SnapshotSuiteTest extends SnapshotSuite {
   }
 
   case class TestClass(a: String, b: Either[String, String], c: Seq[Int])
-  implicit val testClassRW = macroRW[TestClass]
+  implicit val testClassRW: ReadWriter[TestClass] = macroRW
   snapshotTest("class") {
     TestClass(
       "Hello",
