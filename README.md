@@ -11,8 +11,8 @@ Published for Scala 3.9+, on the JVM, Scala.js 1 and Scala Native 0.5.
 | [munit](https://scalameta.org/munit/) | `snaptest-munit` | available |
 | [ScalaTest](https://www.scalatest.org) | `snaptest-scalatest` | available |
 | [uTest](https://github.com/com-lihaoyi/utest) | `snaptest-utest` | available |
+| [specs2](https://etorreborre.github.io/specs2/) | `snaptest-specs2` | available |
 | munit-cats-effect, weaver | | planned |
-| specs2 | | planned |
 | ZIO Test | | planned |
 
 `snaptest-core` holds the framework-independent parts, to integrate other test
@@ -119,6 +119,24 @@ object ParserTests extends TestSuite, UTestSnapshots:
 ```
 
 Snapshots are keyed by test path.
+
+### specs2
+
+```scala
+import org.specs2.mutable.Specification
+import snaptest.*
+
+class ParserSpec extends Specification, Specs2Snapshots:
+  "parser" should {
+    "parse sums" in {
+      parse("1 + 2") must matchSnapshot("parse sums")
+    }
+  }
+```
+
+specs2 does not expose the running example, so snapshots are keyed
+explicitly. For the same reason, snapshots that are no longer checked are only
+removed with `SNAPTEST=prune`.
 
 ## Snapshot assertions
 
