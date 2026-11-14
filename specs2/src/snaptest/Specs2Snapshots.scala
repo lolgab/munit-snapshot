@@ -4,7 +4,8 @@ import org.specs2.execute.Failure
 import org.specs2.execute.Result
 import org.specs2.execute.Success
 import org.specs2.matcher.Matcher
-import org.specs2.specification.AfterAll
+import org.specs2.specification.AfterSpec
+import org.specs2.specification.core.Fragments
 
 /** Snapshot testing for specs2 specifications, with a matcher:
   *
@@ -21,7 +22,7 @@ import org.specs2.specification.AfterAll
   * explicitly. For the same reason, snapshots that are no longer checked are
   * only removed with the `prune` [[SnapshotMode]].
   */
-trait Specs2Snapshots extends AfterAll:
+trait Specs2Snapshots extends AfterSpec:
 
   /** Whether snapshot files are written, see [[SnapshotMode]] */
   def snapshotMode: SnapshotMode = SnapshotMode.fromEnv
@@ -47,4 +48,5 @@ trait Specs2Snapshots extends AfterAll:
         }
     }
 
-  def afterAll(): Unit = session.finish(allRan = false)
+  def afterSpec: Fragments =
+    Fragments(fragmentFactory.step(session.finish(allRan = false)))
