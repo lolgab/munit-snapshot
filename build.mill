@@ -102,3 +102,11 @@ object utest extends SnaptestProject:
   override def upstream = Seq(core)
   override def deps = Seq(mvn"com.lihaoyi::utest::0.9.5")
   override def testFramework = "utest.runner.Framework"
+
+object specs2 extends SnaptestProject:
+  override def upstream = Seq(core)
+  override def deps = Seq(
+    mvn"org.specs2::specs2-core::5.11.0",
+    mvn"com.lihaoyi::sourcecode::0.4.4"
+  )
+  override def testFramework = "org.specs2.runner.Specs2Framework"
