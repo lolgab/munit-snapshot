@@ -68,7 +68,10 @@
 libraryDependencies += "com.github.lolgab" %%% "snaptest-munit" % "0.1.0" % Test
 
 // Mill
-def mvnDeps = Seq(mvn"com.github.lolgab::snaptest-munit::0.1.0")</pre>
+def mvnDeps = Seq(mvn"com.github.lolgab::snaptest-munit::0.1.0")
+
+// Scala CLI
+//> using test.dep com.github.lolgab::snaptest-munit::0.1.0</pre>
           <p>Write a test:</p>
           <div class="fragment" data-ui>
           <div class="panel-bar"><code>ExampleSnapshotTest.scala</code><span>munit</span></div>
@@ -100,6 +103,11 @@ object ExampleSnapshotTestSnapshots extends snaptest.Snapshots {
   )
 }</pre>
           </div>
+          <p>
+            With Scala CLI, a suite in <code>ExampleSnapshotTest.test.scala</code> gets
+            <code>snapshots/ExampleSnapshotTestSnapshots.test.scala</code>, so
+            the snapshots compile with the test dependencies.
+          </p>
           <p>
             Commit the generated file. It compiles with the tests, which
             compare their values with it and fail when they differ:

@@ -30,6 +30,8 @@ After adding the `snaptest-munit` dependency:
 libraryDependencies += "com.github.lolgab" %%% "snaptest-munit" % "0.1.0" % Test
 // Mill
 def mvnDeps = Seq(mvn"com.github.lolgab::snaptest-munit::0.1.0")
+// Scala CLI
+//> using test.dep com.github.lolgab::snaptest-munit::0.1.0
 ```
 
 You can create a basic test in a file called `ExampleSnapshotTest.scala`:
@@ -61,6 +63,10 @@ object ExampleSnapshotTestSnapshots extends snaptest.Snapshots {
   )
 }
 ```
+
+With Scala CLI, a suite in `ExampleSnapshotTest.test.scala` gets
+`snapshots/ExampleSnapshotTestSnapshots.test.scala`, so the snapshots compile
+with the test dependencies.
 
 Commit the generated file. It is compiled with the tests, which then compare
 their values with it and fail when they differ:
