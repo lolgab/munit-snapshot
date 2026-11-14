@@ -3,7 +3,7 @@
 //| - com.goyeau::mill-scalafix::0.6.2
 package build
 
-import mill.*, scalalib.*, scalanativelib.*, publish.*
+import mill.*, scalalib.*, scalajslib.*, scalajslib.api.JsEnvConfig, scalanativelib.*, publish.*
 import com.goyeau.mill.scalafix.ScalafixModule
 
 object `munit-snapshot` extends Module:
@@ -16,8 +16,10 @@ object `munit-snapshot` extends Module:
     def artifactName = "munit-snapshot"
     def mvnDeps = super.mvnDeps() ++ Seq(
       mvn"org.scalameta::munit::1.3.6",
-      mvn"com.lihaoyi::upickle::4.4.3",
-      mvn"com.lihaoyi::os-lib::0.11.10"
+      mvn"com.lihaoyi::pprint::0.9.6",
+      // Only published for Scala 2.13, which Scala 3 can use
+      mvn"org.portable-scala::portable-scala-reflect::1.1.3"
+        .withDottyCompat(scalaVersion())
     )
     def pomSettings =
       PomSettings(
@@ -38,22 +40,29 @@ object `munit-snapshot` extends Module:
       "-new-syntax"
     )
 
-  trait CommonTest extends ScalaModule, TestModule.Munit:
-    // Snapshot files live next to the test sources, so changing them
-    // must invalidate the test results
-    def jsonFiles = Task.Input {
-      os.walk(moduleDir)
-        .filter(f => os.isFile(f) && f.ext == "json")
-        .map(PathRef(_))
-    }
-    def compile = Task {
-      jsonFiles()
-      super.compile()
-    }
+  // Sources shared by the platforms with java.nio.file
+  trait JvmNative extends Common:
+    def jvmNativeSources = Task.Sources("src-jvm-native")
+    def sources = Task { super.sources() ++ jvmNativeSources() }
 
-  object jvm extends Common:
-    object test extends ScalaTests, CommonTest
+  object jvm extends JvmNative:
+    object test extends ScalaTests, TestModule.Munit
 
-  object native extends Common, ScalaNativeModule:
+  object js extends Common, ScalaJSModule:
+    def scalaJSVersion = "1.22.0"
+    object test extends ScalaJSTests, TestModule.Munit:
+      // Node.js inherits the environment of the Mill daemon, so forward the
+      // variables controlling snapshots from the client
+      def snapshotEnv = Task.Input {
+        Task.env.filter((k, _) => k == "CI" || k == "MUNIT_SNAPSHOT")
+      }
+      def jsEnvConfig = Task {
+        super.jsEnvConfig() match
+          case node: JsEnvConfig.NodeJs =>
+            node.copy(env = node.env ++ snapshotEnv())
+          case other => other
+      }
+
+  object native extends JvmNative, ScalaNativeModule:
     def scalaNativeVersion = "0.5.12"
-    object test extends ScalaNativeTests, CommonTest
+    object test extends ScalaNativeTests, TestModule.Munit
