@@ -32,7 +32,7 @@ trait SnaptestProject extends Module:
         description = "Snapshot testing for Scala",
         organization = "com.github.lolgab",
         url = "https://github.com/lolgab/snaptest",
-        licenses = Seq(License.MIT),
+        licenses = Seq(License.`Apache-2.0`),
         versionControl = VersionControl.github("lolgab", "snaptest"),
         developers = Seq(
           Developer("lolgab", "Lorenzo Gabriele", "https://github.com/lolgab")

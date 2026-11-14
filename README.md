@@ -315,3 +315,7 @@ This project was called munit-snapshot.
   longer needed.
 - Values need a `SnapshotRender` instead of an upickle `ReadWriter`; the default
   one works for every type.
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).
