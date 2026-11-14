@@ -38,3 +38,11 @@ enum SnapshotResult:
         s"Missing snapshot '$key', run the tests locally or with " +
           s"${SnapshotMode.EnvVar}=always to record it\n  in $path"
       )
+
+  /** [[failure]] followed by a diff, for frameworks without a readable one */
+  def failureWithDiff: Option[String] = this match
+    case Mismatch(_, expected, obtained, _) =>
+      failure.map(f =>
+        s"$f\n=> Diff (- expected, + obtained)\n${SnapshotDiff(expected, obtained)}"
+      )
+    case _ => failure

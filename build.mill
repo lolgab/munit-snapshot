@@ -15,6 +15,7 @@ trait SnaptestProject extends Module:
   def scala2Deps: Seq[Dep] = Nil
   def upstream: Seq[SnaptestProject] = Nil
   def testDeps: Seq[Dep] = Nil
+  def testFramework: String = "munit.Framework"
 
   trait Common
       extends PlatformScalaModule,
@@ -45,7 +46,8 @@ trait SnaptestProject extends Module:
       "-new-syntax"
     )
 
-  trait CommonTests extends TestModule.Munit:
+  trait CommonTests extends TestModule:
+    def testFramework = SnaptestProject.this.testFramework
     def mvnDeps = super.mvnDeps() ++ testDeps
 
   // Sources shared by the platforms with java.nio.file
@@ -87,3 +89,16 @@ object core extends SnaptestProject:
 object munit extends SnaptestProject:
   override def upstream = Seq(core)
   override def deps = Seq(mvn"org.scalameta::munit::1.3.6")
+
+object scalatest extends SnaptestProject:
+  override def upstream = Seq(core)
+  override def deps = Seq(
+    mvn"org.scalatest::scalatest::3.2.20",
+    mvn"com.lihaoyi::sourcecode::0.4.4"
+  )
+  override def testFramework = "org.scalatest.tools.Framework"
+
+object utest extends SnaptestProject:
+  override def upstream = Seq(core)
+  override def deps = Seq(mvn"com.lihaoyi::utest::0.9.5")
+  override def testFramework = "utest.runner.Framework"
