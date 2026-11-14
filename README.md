@@ -284,24 +284,16 @@ scalafmt and scoverage skip them. Scala 3 built-in coverage (`-coverage-out`)
 ignores that comment, exclude the generated objects with
 `-coverage-exclude-classlikes:.*Snapshots` instead.
 
-## Scala.js
+## Scala.js and Scala Native
 
-Scala.js tests run on Node.js, with the same snapshots as the JVM and Scala
-Native.
+Scala.js tests run on Node.js, and every platform uses the same snapshots.
 
-With Mill, Node.js inherits the environment of the Mill daemon rather than the
-one of your shell. Forward `SNAPTEST` and `CI` to the tests:
+With Mill, Scala.js and Scala Native tests see the environment the Mill daemon
+started with rather than the one of your shell. Use `--no-daemon` when setting
+`SNAPTEST`:
 
-```scala
-object test extends ScalaJSTests, TestModule.Munit:
-  def snapshotEnv = Task.Input {
-    Task.env.filter((k, _) => k == "CI" || k == "SNAPTEST")
-  }
-  def jsEnvConfig = Task {
-    super.jsEnvConfig() match
-      case node: JsEnvConfig.NodeJs => node.copy(env = node.env ++ snapshotEnv())
-      case other => other
-  }
+```sh
+SNAPTEST=always ./mill --no-daemon __.test
 ```
 
 ## License

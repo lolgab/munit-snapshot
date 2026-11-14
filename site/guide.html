@@ -43,7 +43,7 @@
         <a href="#rendering">Rendering</a>
         <a href="#modes">Updating snapshots</a>
         <a href="#generated-sources">Generated sources</a>
-        <a href="#scala-js">Scala.js</a>
+        <a href="#scala-js">Scala.js and Native</a>
       </nav>
 
       <main class="doc">
@@ -377,25 +377,20 @@ SNAPTEST=always sbt test</pre>
         </section>
 
         <section id="scala-js">
-          <h2>Scala.js</h2>
+          <h2>Scala.js and Scala Native</h2>
           <p>
-            Scala.js tests run on Node.js, with the same snapshots as the JVM
-            and Scala Native.
+            Scala.js tests run on Node.js, and every platform uses the same
+            snapshots.
           </p>
           <p>
-            With Mill, Node.js inherits the environment of the Mill daemon
-            rather than the one of your shell. Forward <code>SNAPTEST</code>
-            and <code>CI</code> to the tests:
+            With Mill, Scala.js and Scala Native tests see the environment the
+            Mill daemon started with rather than the one of your shell. Use
+            <code>--no-daemon</code> when setting <code>SNAPTEST</code>:
           </p>
-          <pre class="code" data-scala>object test extends ScalaJSTests, TestModule.Munit:
-  def snapshotEnv = Task.Input {
-    Task.env.filter((k, _) => k == "CI" || k == "SNAPTEST")
-  }
-  def jsEnvConfig = Task {
-    super.jsEnvConfig() match
-      case node: JsEnvConfig.NodeJs => node.copy(env = node.env ++ snapshotEnv())
-      case other => other
-  }</pre>
+          <div class="fragment" data-ui>
+          <div class="panel-bar"><code>terminal</code><span>Scala.js and Scala Native</span></div>
+          <pre class="code">SNAPTEST=always ./mill --no-daemon __.test</pre>
+          </div>
         </section>
 
       </main>
