@@ -14,7 +14,7 @@ Published for Scala 3.9+, on the JVM, Scala.js 1 and Scala Native 0.5.
 | [specs2](https://etorreborre.github.io/specs2/) | `snaptest-specs2` | available |
 | [munit-cats-effect](https://github.com/typelevel/munit-cats-effect) | `snaptest-munit-cats-effect` | available |
 | [weaver](https://typelevel.org/weaver-test/) | `snaptest-weaver` | available |
-| ZIO Test | | planned |
+| [ZIO Test](https://zio.dev/reference/test/) | `snaptest-zio` | available |
 
 `snaptest-core` holds the framework-independent parts, to integrate other test
 frameworks.
@@ -177,6 +177,36 @@ snapshots are keyed explicitly, and the ones no longer checked are only removed
 with `SNAPTEST=prune`. Snapshots are written when the shared resource is
 released: a suite defining its own `sharedResource` adds them with
 `myResource.onFinalize(finishSnapshots)`.
+
+### ZIO Test
+
+```scala
+import snaptest.*
+import zio.*
+import zio.test.*
+
+object ParserSpec extends ZIOSpecDefault, ZioSnapshots:
+  def spec = suite("parser")(
+    test("sum") {
+      assertZIOSnapshot(parse("1 + 2")) // key: parser / sum
+    },
+    test("values") {
+      for
+        sum <- assertSnapshot(1 + 2)
+        product <- assertSnapshot(1 * 2)
+      yield sum && product
+    }
+  )
+```
+
+`assertSnapshot` returns a `UIO[TestResult]` and `assertZIOSnapshot` snapshots
+the result of an effect, like `assertZIO`. Snapshots are keyed by the labels of
+the suites and the test, given to each test by an aspect, so parallel tests
+work. Snapshotting a `ZIO` itself is a compile error.
+
+Tests can be filtered, so snapshots that are no longer checked are only removed
+with `SNAPTEST=prune`. A spec overriding `aspects` keeps the snapshot aspects
+with `super.aspects ++ ...`.
 
 ## Snapshot assertions
 
