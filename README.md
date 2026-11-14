@@ -12,7 +12,8 @@ Published for Scala 3.9+, on the JVM, Scala.js 1 and Scala Native 0.5.
 | [ScalaTest](https://www.scalatest.org) | `snaptest-scalatest` | available |
 | [uTest](https://github.com/com-lihaoyi/utest) | `snaptest-utest` | available |
 | [specs2](https://etorreborre.github.io/specs2/) | `snaptest-specs2` | available |
-| munit-cats-effect, weaver | | planned |
+| [munit-cats-effect](https://github.com/typelevel/munit-cats-effect) | `snaptest-munit-cats-effect` | available |
+| [weaver](https://typelevel.org/weaver-test/) | `snaptest-weaver` | available |
 | ZIO Test | | planned |
 
 `snaptest-core` holds the framework-independent parts, to integrate other test
@@ -137,6 +138,45 @@ class ParserSpec extends Specification, Specs2Snapshots:
 specs2 does not expose the running example, so snapshots are keyed
 explicitly. For the same reason, snapshots that are no longer checked are only
 removed with `SNAPTEST=prune`.
+
+### munit-cats-effect
+
+```scala
+import cats.effect.IO
+import munit.CatsEffectSuite
+import snaptest.*
+
+class ParserTest extends CatsEffectSuite, CatsEffectSnapshots:
+  test("parser") {
+    assertIOSnapshot(parseIO("1 + 2"))
+  }
+```
+
+`assertIOSnapshot` snapshots the result of an `IO`, like `assertIO` compares it
+with an expected value. Snapshotting an `IO` itself is a compile error, since
+it would store its description instead of its result.
+
+### weaver
+
+```scala
+import cats.effect.IO
+import snaptest.*
+import weaver.SimpleIOSuite
+
+object ParserSuite extends SimpleIOSuite, WeaverSnapshots:
+  test("parser") {
+    parseIO("1 + 2").flatMap(expectSnapshot("parser", _))
+  }
+
+  snapshotTest("sum")(parseIO("1 + 2")) // keyed by the test name
+```
+
+`expectSnapshot` returns `IO[Expectations]`, so it composes with other
+expectations. Weaver tests do not know their name and run in parallel, so
+snapshots are keyed explicitly, and the ones no longer checked are only removed
+with `SNAPTEST=prune`. Snapshots are written when the shared resource is
+released: a suite defining its own `sharedResource` adds them with
+`myResource.onFinalize(finishSnapshots)`.
 
 ## Snapshot assertions
 
