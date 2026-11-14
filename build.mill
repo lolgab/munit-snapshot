@@ -110,3 +110,15 @@ object specs2 extends SnaptestProject:
     mvn"com.lihaoyi::sourcecode::0.4.4"
   )
   override def testFramework = "org.specs2.runner.Specs2Framework"
+
+object `munit-cats-effect` extends SnaptestProject:
+  override def upstream = Seq(munit)
+  override def deps = Seq(mvn"org.typelevel::munit-cats-effect::2.2.1")
+
+object weaver extends SnaptestProject:
+  override def upstream = Seq(core)
+  override def deps = Seq(
+    mvn"org.typelevel::weaver-cats::0.13.1",
+    mvn"com.lihaoyi::sourcecode::0.4.4"
+  )
+  override def testFramework = "weaver.framework.CatsEffect"
