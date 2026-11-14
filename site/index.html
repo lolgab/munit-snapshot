@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>snaptest: snapshot tests for Scala</title>
+    <meta
+      name="description"
+      content="snaptest records what your tests produce as generated Scala files, for munit, ScalaTest, uTest, specs2, munit-cats-effect, weaver and ZIO Test, on the JVM, Scala.js and Scala Native."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="./">snaptest</a>
+      <nav aria-label="Main">
+        <a class="link" href="guide.html">Guide</a>
+        <a class="link" href="https://github.com/lolgab/snaptest">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero__copy">
+          <h1>
+            <span class="line"><span data-line style="--i: 0">Snapshot tests</span></span>
+            <span class="line"><span data-line style="--i: 1">for Scala</span></span>
+          </h1>
+          <p class="hero__sentence">
+            snaptest records what your tests produce as generated Scala files,
+            and fails with a diff and a link to the line when it changes.
+          </p>
+          <div class="hero__actions">
+            <a class="button" href="guide.html">Set up snaptest</a>
+            <a class="link" href="#frameworks">munit, ScalaTest, ZIO and four more</a>
+          </div>
+        </div>
+
+        <div class="hero__stage">
+          <div class="page-snapshot" data-ui data-page-snapshot>
+            <div class="panel-bar">
+              <code>snapshots/HomePageTestSnapshots.scala</code>
+              <button type="button" class="ui-button ui-button--accept" data-accept hidden>Rerun with SNAPTEST=always</button>
+            </div>
+            <pre class="code" aria-label="The snapshot file of this page"></pre>
+            <div class="page-snapshot__field">
+              <label for="headline">This page's headline, snapshotted above</label>
+              <input id="headline" class="field" value="Snapshot tests for Scala" autocomplete="off" spellcheck="false" />
+            </div>
+            <pre class="page-snapshot__result" role="status" aria-live="polite"></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="showcase" data-showcase aria-labelledby="showcase-heading">
+        <div class="showcase__in" data-ui>
+          <label for="value">A value, as your test renders it</label>
+          <textarea id="value" class="field code-input" spellcheck="false">User(name = "ada", roles = List("admin", "dev"))</textarea>
+          <div class="presets" role="group" aria-label="Examples">
+            <button type="button" class="ui-button" data-preset="case class" aria-pressed="true">case class</button>
+            <button type="button" class="ui-button" data-preset="multi-line" aria-pressed="false">multi-line</button>
+            <button type="button" class="ui-button" data-preset="string" aria-pressed="false">string</button>
+            <button type="button" class="ui-button" data-preset="tricky string" aria-pressed="false">tricky string</button>
+          </div>
+        </div>
+        <div class="showcase__out">
+          <div data-ui>
+            <div class="panel-bar"><span>The entry snaptest writes</span></div>
+            <pre class="code" data-showcase-out aria-live="polite"></pre>
+          </div>
+          <p class="note">
+            Plain strings, triple quotes, or a margin for values over many
+            lines: snaptest picks the literal a reviewer reads fastest.
+          </p>
+        </div>
+        <h2 class="split-heading" id="showcase-heading">
+          <span>Any value,</span> <span>readable Scala</span>
+        </h2>
+      </section>
+
+      <section class="steps" aria-labelledby="steps-heading">
+        <div class="steps__text">
+          <h2 id="steps-heading">From test to snapshot</h2>
+          <div class="step is-active" data-state="test">
+            <h3 data-reveal>Write a test that returns a value.</h3>
+            <p data-reveal style="--i: 1">
+              Mix the snaptest trait of your framework into the suite, then
+              call <code>assertSnapshot</code> or define a
+              <code>snapshotTest</code>.
+            </p>
+          </div>
+          <div class="step" data-state="record">
+            <h3>Run it once, then commit the file.</h3>
+            <p>
+              snaptest writes <code>snapshots/ExampleTestSnapshots.scala</code>
+              next to the test. It compiles with your tests, so build tools
+              rerun them when it changes.
+            </p>
+          </div>
+          <div class="step" data-state="fail">
+            <h3>Change the code, and it fails.</h3>
+            <p>
+              The failure shows the diff and links to the snapshot's line.
+              Rerun with <code>SNAPTEST=always</code> when the change is
+              intended.
+            </p>
+          </div>
+        </div>
+        <div class="stage" data-state="test" aria-live="polite">
+          <div data-ui>
+            <div class="stage__state stage__state--test">
+              <div class="panel-bar"><code>ExampleTest.scala</code><span>munit</span></div>
+              <pre class="code" data-scala data-numbers>import snaptest.*
+
+class ExampleTest extends munit.FunSuite, MunitSnapshots:
+  snapshotTest("one plus one") {
+    1 + 1
+  }
+
+  test("parser") {
+    assertSnapshot(parse("1 + 2"))
+  }</pre>
+            </div>
+            <div class="stage__state stage__state--record">
+              <div class="panel-bar"><code>snapshots/ExampleTestSnapshots.scala</code><span class="ok">2 recorded</span></div>
+              <pre class="code" data-scala data-numbers>// Generated by snaptest, update with SNAPTEST=always
+// format: off
+// $COVERAGE-OFF$
+package example
+
+/** Snapshots of [[ExampleTest]] */
+object ExampleTestSnapshots extends snaptest.Snapshots {
+  def entries = Seq(
+    "one plus one" -> "2",
+    "parser" -> "Sum(Num(1), Num(2))",
+  )
+}</pre>
+            </div>
+            <div class="stage__state stage__state--fail">
+              <div class="panel-bar"><code>sbt test</code><span class="fail">1 failed</span></div>
+              <pre class="code"><span class="fail">==&gt; X example.ExampleTest.parser</span>
+ 9:  test("parser") {
+10:    assertSnapshot(parse("1 + 2"))
+<span class="fail">Snapshot 'parser' does not match, rerun with
+SNAPTEST=always to update it</span>
+  at snapshots/ExampleTestSnapshots.scala:10
+=&gt; Diff (- expected, + obtained)
+<span class="del">-Sum(Num(1), Num(2))</span>
+<span class="add">+Add(Num(1), Num(2))</span></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="catalog" id="frameworks" aria-labelledby="catalog-heading">
+        <div class="catalog__list">
+          <h2 id="catalog-heading">Every framework, every platform</h2>
+          <div class="catalog__groups">
+          <div>
+          <p class="group" data-reveal>Frameworks</p>
+          <ul>
+            <li data-reveal style="--i: 1"><span><a href="guide.html#munit">munit</a></span><span>snaptest-munit</span></li>
+            <li data-reveal style="--i: 2"><span><a href="guide.html#munit-cats-effect">munit-cats-effect</a></span><span>snaptest-munit-cats-effect</span></li>
+            <li data-reveal style="--i: 3"><span><a href="guide.html#scalatest">ScalaTest</a></span><span>snaptest-scalatest</span></li>
+            <li data-reveal style="--i: 4"><span><a href="guide.html#utest">uTest</a></span><span>snaptest-utest</span></li>
+            <li data-reveal style="--i: 5"><span><a href="guide.html#specs2">specs2</a></span><span>snaptest-specs2</span></li>
+            <li data-reveal style="--i: 6"><span><a href="guide.html#weaver">weaver</a></span><span>snaptest-weaver</span></li>
+            <li data-reveal style="--i: 7"><span><a href="guide.html#zio">ZIO Test</a></span><span>snaptest-zio</span></li>
+          </ul>
+          </div>
+          <div>
+          <p class="group" data-reveal>Platforms</p>
+          <ul style="--dot: var(--string)">
+            <li data-reveal style="--i: 1"><span>JVM</span><span>Scala 3.9+</span></li>
+            <li data-reveal style="--i: 2"><span><a href="guide.html#scala-js">Scala.js</a></span><span>1.x</span></li>
+            <li data-reveal style="--i: 3"><span>Scala Native</span><span>0.5</span></li>
+          </ul>
+          <p class="group" data-reveal>Modes, with <code>SNAPTEST</code></p>
+          <ul style="--dot: var(--muted)">
+            <li data-reveal style="--i: 1"><span><a href="guide.html#modes">auto</a></span><span>records new, default locally</span></li>
+            <li data-reveal style="--i: 2"><span><a href="guide.html#modes">always</a></span><span>accepts every change</span></li>
+            <li data-reveal style="--i: 3"><span><a href="guide.html#modes">prune</a></span><span>also removes unchecked</span></li>
+            <li data-reveal style="--i: 4"><span><a href="guide.html#modes">no</a></span><span>never writes, default on CI</span></li>
+          </ul>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="why" aria-labelledby="why-heading">
+        <div class="why__text">
+          <h2 id="why-heading" class="visually-hidden">Why snaptest</h2>
+          <p class="why__statement" data-reveal>
+            Snapshots compile with your tests, failures link to the line, and
+            CI never records them silently.
+          </p>
+          <div class="why__follow" data-reveal style="--i: 1">
+            <p>
+              No build plugin and no configuration: add the dependency for
+              your framework and run your tests. Cached builds rerun them when
+              a snapshot changes.
+            </p>
+            <a class="button button--quiet" href="guide.html#generated-sources">How the files work</a>
+          </div>
+        </div>
+        <div class="why__ci" data-ui data-reveal style="--i: 2">
+          <div class="panel-bar"><code>CI=true sbt test</code><span class="fail">1 failed</span></div>
+          <pre class="code"><span class="fail">==&gt; X example.ParserTest.division</span>
+<span class="fail">Missing snapshot 'division', run the tests locally or
+with SNAPTEST=always to record it</span>
+  in snapshots/ParserTestSnapshots.scala
+<span class="ok">+ example.ParserTest.sum</span>
+<span class="ok">+ example.ParserTest.product</span>
+Tests: 2 passed, 1 failed</pre>
+        </div>
+      </section>
+
+      <section class="close" aria-labelledby="close-heading">
+        <div class="close__field close__field--left" aria-hidden="true"></div>
+        <div class="close__tile" data-reveal>
+          <h2 id="close-heading">Add it to your build</h2>
+          <div data-ui>
+            <pre id="dependency">libraryDependencies += "com.github.lolgab" %%% "snaptest-munit" % "0.1.0" % Test</pre>
+          </div>
+          <div class="close__actions">
+            <button type="button" class="button" data-copy="#dependency">Copy for sbt</button>
+            <a class="button button--quiet" href="guide.html">Read the guide</a>
+          </div>
+        </div>
+        <div class="close__field" aria-hidden="true"></div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer">
+        <p>Snapshot testing for Scala</p>
+        <nav aria-label="Footer">
+          <a class="link" href="guide.html">Guide</a>
+          <a class="link" href="https://github.com/lolgab/snaptest">GitHub</a>
+          <a class="link" href="https://central.sonatype.com/namespace/com.github.lolgab">Maven Central</a>
+        </nav>
+        <p>2026 · <a class="link" href="https://github.com/lolgab/snaptest/blob/main/LICENSE">Apache 2.0 licence</a></p>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>

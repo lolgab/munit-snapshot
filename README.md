@@ -6,6 +6,8 @@ so build tools pick up their changes without any configuration.
 
 Published for Scala 3.9+, on the JVM, Scala.js 1 and Scala Native 0.5.
 
+Documentation: https://lolgab.github.io/snaptest/
+
 | Test framework | Artifact | Status |
 |----------------|----------|--------|
 | [munit](https://scalameta.org/munit/) | `snaptest-munit` | available |
@@ -276,15 +278,10 @@ scalafmt and scoverage skip them. Scala 3 built-in coverage (`-coverage-out`)
 ignores that comment, exclude the generated objects with
 `-coverage-exclude-classlikes:.*Snapshots` instead.
 
-The generated objects are found at runtime with
-[portable-scala-reflect](https://github.com/portable-scala/portable-scala-reflect),
-which works on every platform.
-
 ## Scala.js
 
-Snapshots are compiled with the tests, so they are checked in any JavaScript
-environment, including browsers. Writing them needs the Node.js `fs` module:
-where it is not available the mode defaults to `no`.
+Scala.js tests run on Node.js, with the same snapshots as the JVM and Scala
+Native.
 
 With Mill, Node.js inherits the environment of the Mill daemon rather than the
 one of your shell. Forward `SNAPTEST` and `CI` to the tests:
@@ -300,21 +297,6 @@ object test extends ScalaJSTests, TestModule.Munit:
       case other => other
   }
 ```
-
-## Migrating from munit-snapshot 0.0.x
-
-This project was called munit-snapshot.
-
-- Depend on `snaptest-munit`, `import snaptest.*` and replace
-  `extends SnapshotSuite` with `extends munit.FunSuite, MunitSnapshots`.
-- `MUNIT_SNAPSHOT` is now `SNAPTEST`.
-- Snapshots moved from `<Suite>.json` to the generated
-  `snapshots/<Suite>Snapshots.scala`: delete the JSON files and run the tests
-  once to record the new ones.
-- The build configuration invalidating tests when the JSON files change is no
-  longer needed.
-- Values need a `SnapshotRender` instead of an upickle `ReadWriter`; the default
-  one works for every type.
 
 ## License
 
