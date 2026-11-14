@@ -9,8 +9,10 @@ Published for Scala 3.9+, on the JVM, Scala.js 1 and Scala Native 0.5.
 | Test framework | Artifact | Status |
 |----------------|----------|--------|
 | [munit](https://scalameta.org/munit/) | `snaptest-munit` | available |
+| [ScalaTest](https://www.scalatest.org) | `snaptest-scalatest` | available |
+| [uTest](https://github.com/com-lihaoyi/utest) | `snaptest-utest` | available |
 | munit-cats-effect, weaver | | planned |
-| ScalaTest, uTest, specs2 | | planned |
+| specs2 | | planned |
 | ZIO Test | | planned |
 
 `snaptest-core` holds the framework-independent parts, to integrate other test
@@ -79,6 +81,44 @@ and the `[[ExampleSnapshotTest]]` comment links back to the suite.
 Since snapshots are Scala sources, build tools caching test results (for
 example Mill `testCached`) recompile and rerun the tests when they change,
 without any configuration.
+
+## Test frameworks
+
+Every integration provides `assertSnapshot`, keys snapshots the same way and
+stores them in the same files.
+
+### ScalaTest
+
+```scala
+import org.scalatest.funsuite.AnyFunSuite
+import snaptest.*
+
+class ParserTest extends AnyFunSuite, ScalaTestSnapshots:
+  test("parser") {
+    assertSnapshot(parse("1 + 2"))
+  }
+```
+
+Asynchronous suites, like `AsyncFunSuite`, mix in `AsyncScalaTestSnapshots`.
+Mismatches fail with a line diff of the snapshot.
+
+### uTest
+
+```scala
+import snaptest.*
+import utest.*
+
+object ParserTests extends TestSuite, UTestSnapshots:
+  val tests = Tests {
+    test("parser") {
+      test("sum") {
+        assertSnapshot(parse("1 + 2")) // key: parser.sum
+      }
+    }
+  }
+```
+
+Snapshots are keyed by test path.
 
 ## Snapshot assertions
 
