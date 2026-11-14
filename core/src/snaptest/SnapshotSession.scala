@@ -25,11 +25,14 @@ final class SnapshotSession(
 
   private def load(sourcePath: String): (String, SnapshotStore) =
     loaded.getOrElse {
-      val dir = sourcePath.substring(
-        0,
-        sourcePath.lastIndexWhere(c => c == '/' || c == '\\')
+      // Relative source paths (Scala CLI) resolve from the working directory
+      val dir = sourcePath.take(
+        sourcePath.lastIndexWhere(c => c == '/' || c == '\\') + 1
       )
-      val path = s"$dir/snapshots/${names.obj}.scala"
+      // Scala CLI compiles `.test.scala` files with the test dependencies
+      val ext =
+        if sourcePath.endsWith(".test.scala") then ".test.scala" else ".scala"
+      val path = s"${dir}snapshots/${names.obj}$ext"
       val initial = Reflect
         .lookupLoadableModuleClass(
           s"${names.fullName}$$",

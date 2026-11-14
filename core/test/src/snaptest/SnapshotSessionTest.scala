@@ -60,3 +60,36 @@ class SnapshotSessionTest extends munit.FunSuite:
       )
     )
   }
+
+  test("relative source paths") {
+    val session = SnapshotSession(classOf[SessionFixture], SnapshotMode.No)
+    assertEquals(
+      session.test("missing").check("1", "FixtureTest.scala"),
+      SnapshotResult.Missing(
+        "missing",
+        "snapshots/SessionFixtureSnapshots.scala"
+      )
+    )
+  }
+
+  test(".test.scala files get .test.scala snapshot files") {
+    val session = SnapshotSession(classOf[SessionFixture], SnapshotMode.No)
+    assertEquals(
+      session.test("missing").check("1", "FixtureTest.test.scala"),
+      SnapshotResult.Missing(
+        "missing",
+        "snapshots/SessionFixtureSnapshots.test.scala"
+      )
+    )
+  }
+
+  test("other test files get .scala snapshot files") {
+    val session = SnapshotSession(classOf[SessionFixture], SnapshotMode.No)
+    assertEquals(
+      session.test("missing").check("1", "FixtureTest.spec.scala"),
+      SnapshotResult.Missing(
+        "missing",
+        "snapshots/SessionFixtureSnapshots.scala"
+      )
+    )
+  }
